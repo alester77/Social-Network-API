@@ -1,5 +1,5 @@
 const { Schema, model, Types } = require('mongoose');
-const dateFormat = require('../utils/dateFormat');
+const dateFormat = require('../utils/formatDate');
 
 // This is the reactionSchema that will be used as a subdocument to the thoughtSchema
 const reactionSchema = new Schema(

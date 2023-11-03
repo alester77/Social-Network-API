@@ -7,18 +7,21 @@ const {
   deleteUser,
   addFriend,
   deleteFriend
-} = require('../../controllers/userController');
+} = require('../../controller/userController');
 
-// /api/users
-router.route('/').get(getUsers).post(createUser);
+// User routes
+router.route('/')
+  .get(getUsers)       // GET /api/users
+  .post(createUser);   // POST /api/users
 
-// /api/users/:userId
-router.route('/:userId').get(getSingleUser);
-router.route('/:userId').put(updateUser);
-router.route('/:userId').delete(deleteUser);
+router.route('/:userId')
+  .get(getSingleUser)  // GET /api/users/:userId
+  .put(updateUser)     // PUT /api/users/:userId
+  .delete(deleteUser); // DELETE /api/users/:userId
 
-// /api/users/:userId/friends/friendId
-router.route('/:userId/friends/:friendId').post(addFriend);
-router.route('/:userId/friends/:friendId').delete(deleteFriend);
+// Friend routes
+router.route('/:userId/friends/:friendId')
+  .post(addFriend)     // POST /api/users/:userId/friends/:friendId
+  .delete(deleteFriend); // DELETE /api/users/:userId/friends/:friendId
 
 module.exports = router;
