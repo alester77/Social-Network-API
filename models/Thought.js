@@ -1,8 +1,39 @@
-const { Schema, model } = require('mongoose');
-const Reaction = require('./Reaction');
+const { Schema, model, Types } = require('mongoose');
 const dateFormat = require('../utils/dateFormat');
-const { Thought } = require('.');
 
+// This is the reactionSchema that will be used as a subdocument to the thoughtSchema
+const reactionSchema = new Schema(
+  {
+    reactionId: {
+      type: Schema.Types.ObjectId,
+      default: () => new Types.ObjectId(),
+    },
+    reactionBody: {
+      type: String,
+      required: true,
+      minlength: 1,
+      maxlength: 280,
+    },
+    username: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      get: (date) => dateFormat(date)
+    },
+  },
+  {
+    toJSON: {
+      getters: true
+    },
+    id: false
+  }
+);
+
+// This is the thoughtSchema that will now include the reactionSchema as a subdocument
 const thoughtSchema = new Schema(
   {
     thoughtInput: {
@@ -20,7 +51,8 @@ const thoughtSchema = new Schema(
       type: String,
       required: true
     },
-    reactions: [Reaction]
+    // Include reactionSchema as an array indicating there can be many reactions
+    reactions: [reactionSchema]
   },
   {
     toJSON: {
@@ -28,9 +60,9 @@ const thoughtSchema = new Schema(
       getters: true
     },
     id: false
-    }
+  }
 );
-  
 
 const Thought = model('Thought', thoughtSchema);
+
 module.exports = Thought;
