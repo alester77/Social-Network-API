@@ -5,7 +5,7 @@ module.exports = {
 //get thoughts
 getThoughts(req, res) {
     Thought.find({})
-    .then(thoughts => res.json(thoughts))
+    .then(thought => res.json(thought))
     .catch(err => {
         console.log(err);
         res.status(400).json(err);
@@ -47,23 +47,25 @@ createThought(req, res) {
 //update thought
 updateThought(req, res) {
   Thought.findOneAndUpdate(
-      { _id: req.params.thoughtId }, 
-      {
-        thoughtText: req.body.thoughtText,
-        username: req.body.username
-      }, 
-      { new: true }, 
-      (err, result) => {
-        if (result) {
-          res.status(200).json(result);
-          console.log(`Updated: ${result}`);
-        } else {
-          console.log(err);
-          res.status(500).json({ message: 'error', err });
-        }
-      }
+    { _id: req.params.thoughtId }, 
+    {
+      thoughtText: req.body.thoughtText,
+      username: req.body.username
+    }, 
+    { new: true, runValidators: true }
   )
+  .then((thought) => {
+    if (!thought) {
+      return res.status(404).json({ message: 'No thought found with this id!' });
+    }
+    res.json(thought);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).json({ message: 'Error updating thought', err });
+  });
 },
+
 //delete thought
 deleteThought(req, res) {
   Thought.findOneAndRemove({ _id: req.params.thoughtId })

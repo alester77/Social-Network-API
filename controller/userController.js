@@ -32,28 +32,39 @@ createUser(req, res) {
         username: req.body.username,
         email: req.body.email
     })
-      .then((dbUserData) => res.json(dbUserData))
+      .then((user) => res.json(user))
       .catch((err) => res.status(500).json(err));
   },
 //update user
-updateUser(req, res) {
-    User.findOneAndUpdate(
-        { _id: req.params.userId }, 
-        {
-          username: req.body.username,
-          email: req.body.email
-        }, 
-        { new: true }, 
-        (err, result) => {
-          if (result) {
-            res.status(200).json(result);
-            console.log(`Updated: ${result}`);
-          } else {
-            console.log(err);
-            res.status(500).json({ message: 'error', err });
-          }
-        }
-    )
+updateUser({ params, body }, res) {
+  console.log('Params:', params); // Check the params
+  console.log('Body:', body); // Check the body content
+
+  // Perform a direct query to the database using the mongo shell or a GUI to confirm the user exists
+  User.findById(params.userId) // Using findById for direct ID check
+    .then((user) => {
+      if (!user) {
+        console.log('User not found in the database with ID:', params.userId);
+        res.status(404).json({ message: "No user found with this id!" });
+        return;
+      }
+      // User exists, proceed with update
+      User.findOneAndUpdate({ _id: params.userId }, body, {
+        new: true,
+        runValidators: true,
+      })
+      .then((updatedUser) => {
+        res.json(updatedUser);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).json({ message: "An error occurred", error: err });
+      });
+    })
+    .catch((err) => {
+      console.error('Error finding user:', err);
+      res.status(500).json({ message: "An error occurred while finding the user", error: err });
+    });
 },
 //delete user
 deleteUser(req, res) {
