@@ -36,7 +36,7 @@ const reactionSchema = new Schema(
 // This is the thoughtSchema that will now include the reactionSchema as a subdocument
 const thoughtSchema = new Schema(
   {
-    thoughtInput: {
+    thoughtText: {
       type: String,
       required: true,
       minlength: 1,
